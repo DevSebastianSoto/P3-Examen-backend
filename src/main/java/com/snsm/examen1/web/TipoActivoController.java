@@ -3,6 +3,8 @@ package com.snsm.examen1.web;
 import java.util.List;
 import com.snsm.examen1.domain.TipoActivo;
 import com.snsm.examen1.service.TipoActivoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,12 +26,15 @@ public class TipoActivoController {
     @Autowired
     private TipoActivoService tipoActivoService;
 
+    private static Logger logger =
+            LoggerFactory.getLogger(TipoActivoController.class);
 
     @GetMapping("/{id}")
     public TipoActivo getDatoById(@PathVariable(value = "id") Long id) {
         try {
             return this.tipoActivoService.getTipoActivoById(id);
         } catch (Exception e) {
+            logger.error("Get failed: " + e.toString());
             return null;
         }
     }
@@ -37,8 +42,10 @@ public class TipoActivoController {
     @GetMapping
     public List<TipoActivo> getAllTipoActivo() {
         try {
+            logger.info("Get All");
             return this.tipoActivoService.getAllTipoActivo();
         } catch (Exception e) {
+            logger.error("Get failed: " + e.toString());
             return null;
         }
     }
@@ -47,8 +54,10 @@ public class TipoActivoController {
     public TipoActivo updateTipoActivo(@PathVariable(value = "id") Long id,
                                        @RequestBody TipoActivo ta) {
         try {
+            logger.info("Update: " + ta.toString());
             return this.tipoActivoService.update(id, ta);
         } catch (Exception e) {
+            logger.error("Put failed: " + e.toString());
             return null;
         }
     }
@@ -56,8 +65,10 @@ public class TipoActivoController {
     @PostMapping
     public TipoActivo createTipoActivo(@RequestBody TipoActivo ta) {
         try {
+            logger.info("Create: " + ta.toString());
             return this.tipoActivoService.create(ta);
         } catch (Exception e) {
+            logger.error("Post failed: " + e.toString());
             return null;
         }
     }
@@ -66,8 +77,10 @@ public class TipoActivoController {
     public ResponseEntity<?> deleteTipoActivo(@PathVariable(
             value = "id") Long id) {
         try {
+            logger.info("Delete: Tipo Activo #" + id);
             return this.tipoActivoService.delete(id);
         } catch (Exception e) {
+            logger.error("Delete failed: " + e.toString());
             return null;
         }
     }

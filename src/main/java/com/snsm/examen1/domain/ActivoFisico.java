@@ -1,15 +1,11 @@
 package com.snsm.examen1.domain;
 
 import java.time.LocalDate;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -39,7 +35,7 @@ public class ActivoFisico {
     @Column(name = "cantidad_asignados")
     private int cantidadAsignados;
 
-    @Transient
+    @Column(name = "id_tipo_activo")
     private long idTipoActivo;
 
     @Column(name = "estado")
@@ -120,7 +116,4 @@ public class ActivoFisico {
         return idTipoActivo;
     }
 
-    public void setIdTipoActivo(long idTipoActivo) {
-        this.idTipoActivo = idTipoActivo;
-    }
 }
