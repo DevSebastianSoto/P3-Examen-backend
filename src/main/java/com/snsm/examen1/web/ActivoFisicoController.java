@@ -40,7 +40,7 @@ public class ActivoFisicoController {
         try {
             return this.activoFisicoService.getActivoFisicoById(id);
         } catch (Exception e) {
-            logger.error("Get By Id failed: " + e.toString());
+            logger.warn("Get By Id failed: " + e.toString());
             return null;
         }
     }
@@ -50,7 +50,7 @@ public class ActivoFisicoController {
         try {
             return this.activoFisicoService.getAllActivoFisico();
         } catch (Exception e) {
-            logger.error("Get All failed: " + e.toString());
+            logger.warn("Get All failed: " + e.toString());
             return null;
         }
     }
@@ -62,7 +62,7 @@ public class ActivoFisicoController {
             this.activoFisicoService.update(id, af);
             return af;
         } catch (Exception e) {
-            logger.error("Update failed: " + e.toString());
+            logger.warn("Update failed: " + e.toString());
             return null;
         }
     }
@@ -76,7 +76,7 @@ public class ActivoFisicoController {
             this.tipoActivoService.update(af.getIdTipoActivo(), ta);
             return af;
         } catch (Exception e) {
-            logger.error("Create failed: " + e.toString());
+            logger.warn("Create failed: " + e.toString());
             return null;
         }
     }
@@ -87,7 +87,7 @@ public class ActivoFisicoController {
         try {
             return this.activoFisicoService.delete(id);
         } catch (Exception e) {
-            logger.error("Delete failed: " + e.toString());
+            logger.warn("Delete failed: " + e.toString());
             return null;
         }
     }

@@ -1,8 +1,8 @@
 package com.snsm.examen1.web;
 
 import java.util.List;
-import com.snsm.examen1.domain.TipoActivo;
-import com.snsm.examen1.service.TipoActivoService;
+import com.snsm.examen1.domain.Trabajador;
+import com.snsm.examen1.service.TrabajadorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +17,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TipoActivoController
+ * TrabajadorController
  */
 @RestController
-@RequestMapping("/api/tipos-activo")
-public class TipoActivoController {
+@RequestMapping("/api/trabajadores")
+public class TrabajadorController {
 
     @Autowired
-    private TipoActivoService tipoActivoService;
+    private TrabajadorService trabajadorService;
 
     private static Logger logger =
-            LoggerFactory.getLogger(TipoActivoController.class);
+            LoggerFactory.getLogger(TrabajadorController.class);
 
     @GetMapping("/{id}")
-    public TipoActivo getDatoById(@PathVariable(value = "id") Long id) {
+    public Trabajador getDatoById(@PathVariable(value = "id") Long id) {
         try {
-            return this.tipoActivoService.getTipoActivoById(id);
+            return this.trabajadorService.getTrabajadorById(id);
         } catch (Exception e) {
             logger.warn("Get failed: " + e.toString());
             return null;
@@ -40,10 +40,10 @@ public class TipoActivoController {
     }
 
     @GetMapping
-    public List<TipoActivo> getAllTipoActivo() {
+    public List<Trabajador> getAllTrabajador() {
         try {
             logger.info("Get All");
-            return this.tipoActivoService.getAllTipoActivo();
+            return this.trabajadorService.getAllTrabajador();
         } catch (Exception e) {
             logger.warn("Get failed: " + e.toString());
             return null;
@@ -51,11 +51,11 @@ public class TipoActivoController {
     }
 
     @PutMapping("/{id}")
-    public TipoActivo updateTipoActivo(@PathVariable(value = "id") Long id,
-                                       @RequestBody TipoActivo ta) {
+    public Trabajador updateTrabajador(@PathVariable(value = "id") Long id,
+                                       @RequestBody Trabajador ta) {
         try {
             logger.info("Update: " + ta.toString());
-            return this.tipoActivoService.update(id, ta);
+            return this.trabajadorService.update(id, ta);
         } catch (Exception e) {
             logger.warn("Put failed: " + e.toString());
             return null;
@@ -63,10 +63,10 @@ public class TipoActivoController {
     }
 
     @PostMapping
-    public TipoActivo createTipoActivo(@RequestBody TipoActivo ta) {
+    public Trabajador createTrabajador(@RequestBody Trabajador ta) {
         try {
             logger.info("Create: " + ta.toString());
-            return this.tipoActivoService.create(ta);
+            return this.trabajadorService.create(ta);
         } catch (Exception e) {
             logger.warn("Post failed: " + e.toString());
             return null;
@@ -74,11 +74,11 @@ public class TipoActivoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTipoActivo(@PathVariable(
+    public ResponseEntity<?> deleteTrabajador(@PathVariable(
             value = "id") Long id) {
         try {
             logger.info("Delete: Tipo Activo #" + id);
-            return this.tipoActivoService.delete(id);
+            return this.trabajadorService.delete(id);
         } catch (Exception e) {
             logger.warn("Delete failed: " + e.toString());
             return null;
