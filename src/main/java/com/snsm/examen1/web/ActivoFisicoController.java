@@ -36,7 +36,8 @@ public class ActivoFisicoController {
 
 
     @GetMapping("/{id}")
-    public ActivoFisico getDatoById(@PathVariable(value = "id") Long id) {
+    public ActivoFisico getActivoFisicoById(@PathVariable(
+            value = "id") Long id) {
         try {
             return this.activoFisicoService.getActivoFisicoById(id);
         } catch (Exception e) {
