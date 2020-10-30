@@ -4,6 +4,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 import com.snsm.examen1.domain.Trabajador;
 import com.snsm.examen1.exception.ResourceNotFoundException;
+import com.snsm.examen1.repository.ActivoFisicoDeTrabajadorRepository;
 import com.snsm.examen1.repository.TrabajadorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,16 @@ public class TrabajadorService {
     @Autowired
     private TrabajadorRepository trabajadorRepository;
 
+    @Autowired
+    private ActivoFisicoDeTrabajadorRepository aftRepository;
+
     public Trabajador getTrabajadorById(long id) {
-        return this.trabajadorRepository.findById(id).orElseThrow(
+        Trabajador trab = this.trabajadorRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Trabajador", "id", id));
+        boolean hasActivo = aftRepository.findAll().stream()
+                .anyMatch(item -> item.getTrabajador().getId() == trab.getId());
+        trab.setHasActivo(hasActivo);
+        return trab;
     }
 
     public List<Trabajador> getAllTrabajador() {

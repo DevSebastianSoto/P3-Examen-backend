@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Trabajador
@@ -30,6 +31,9 @@ public class Trabajador {
 
     @Column(name = "estado")
     private String estado;
+
+    @Transient
+    private boolean hasActivo;
 
     public Trabajador() {
     }
@@ -82,5 +86,12 @@ public class Trabajador {
         this.estado = estado;
     }
 
+    public boolean isHasActivo() {
+        return hasActivo;
+    }
+
+    public void setHasActivo(boolean hasActivo) {
+        this.hasActivo = hasActivo;
+    }
 
 }
