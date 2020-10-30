@@ -2,6 +2,7 @@ package com.snsm.examen1.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import com.snsm.examen1.domain.ActivoFisico;
 import com.snsm.examen1.domain.ActivoFisicoDeTrabajador;
@@ -42,7 +43,13 @@ public class ActivoFisicoDeTrabajadorService {
     }
 
     public List<ActivoFisicoDeTrabajador> getAllActivoFisicoDeTrabajador() {
-        return this.activoFisicoDeTrabajadorRepository.findAll();
+        return this.activoFisicoDeTrabajadorRepository.findAll().stream()
+                .map(aft -> {
+                    if (aft.getEstado().equals("ACTIVO")) {
+                        aft.getTrabajador().setHasActivo(true);
+                    }
+                    return aft;
+                }).collect(Collectors.toList());
     }
 
     /**

@@ -94,4 +94,11 @@ public class Trabajador {
         this.hasActivo = hasActivo;
     }
 
+    @Override
+    public String toString() {
+        return "Trabajador [apellidos=" + apellidos + ", estado=" + estado
+                + ", fechaNacimiento=" + fechaNacimiento + ", hasActivo="
+                + hasActivo + ", id=" + id + ", nombre=" + nombre + "]";
+    }
+
 }

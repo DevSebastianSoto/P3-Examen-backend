@@ -34,8 +34,9 @@ public class TrabajadorService {
         Trabajador trab = this.trabajadorRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Trabajador", "id", id));
         boolean hasActivo = aftRepository.findAll().stream()
+                .filter(item -> item.getEstado().equals("ACTIVO"))
                 .anyMatch(item -> item.getTrabajador().getId() == trab.getId());
-        logger.warn(hasActivo + "");
+        logger.warn("Trabajador #" + id + "\tHas activo: " + hasActivo);
         trab.setHasActivo(hasActivo);
         return trab;
     }
@@ -44,9 +45,10 @@ public class TrabajadorService {
         var aftList = aftRepository.findAll();
         return this.trabajadorRepository.findAll().stream().map(trab -> {
             trab.setHasActivo(aftList.stream()
-                    .anyMatch(e -> e.getTrabajador().getId() != trab.getId()));
-            logger.warn("Activos asociados:\t" + aftList.size());
-            logger.warn(trab.isHasActivo() + "");
+                    .filter(item -> item.getEstado().equals("ACTIVO"))
+                    .anyMatch(item -> item.getTrabajador().getId() == trab
+                            .getId()));
+            logger.warn(trab.toString());
             return trab;
         }).collect(Collectors.toList());
     }
