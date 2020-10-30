@@ -39,7 +39,6 @@ public class TipoActivoService {
         ta.setNombre(nta.getNombre());
         ta.setDescripcion(nta.getDescripcion());
         ta.setEstado(nta.getEstado());
-        ta.setActivosFisicos(nta.getActivosFisicos());
         return this.tipoActivoRepository.save(ta);
     }
 

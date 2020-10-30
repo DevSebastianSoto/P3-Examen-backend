@@ -55,7 +55,7 @@ public class ActivoFisicoDeTrabajadorController {
             value = "idTrabajador") long idTrabajador, @PathVariable(value = "idActivoFisico") long idActivoFisico, @RequestBody ActivoFisicoDeTrabajador aft) {
         try {
             return aftService.create(idTrabajador, idActivoFisico,
-                    aft.getFechaAsignacion());
+                    aft.getFechaAsignacion(), aft.getEstado());
         } catch (Exception e) {
             logger.warn("Create failed: " + e.toString());
             return null;

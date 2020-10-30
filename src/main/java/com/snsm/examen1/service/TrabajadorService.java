@@ -1,11 +1,15 @@
 package com.snsm.examen1.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import com.snsm.examen1.domain.Trabajador;
 import com.snsm.examen1.exception.ResourceNotFoundException;
 import com.snsm.examen1.repository.ActivoFisicoDeTrabajadorRepository;
 import com.snsm.examen1.repository.TrabajadorRepository;
+import com.snsm.examen1.web.TipoActivoController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 public class TrabajadorService {
+
+    private static Logger logger =
+            LoggerFactory.getLogger(TrabajadorService.class);
 
     @Autowired
     private TrabajadorRepository trabajadorRepository;
@@ -28,12 +35,20 @@ public class TrabajadorService {
                 () -> new ResourceNotFoundException("Trabajador", "id", id));
         boolean hasActivo = aftRepository.findAll().stream()
                 .anyMatch(item -> item.getTrabajador().getId() == trab.getId());
+        logger.warn(hasActivo + "");
         trab.setHasActivo(hasActivo);
         return trab;
     }
 
     public List<Trabajador> getAllTrabajador() {
-        return this.trabajadorRepository.findAll();
+        var aftList = aftRepository.findAll();
+        return this.trabajadorRepository.findAll().stream().map(trab -> {
+            trab.setHasActivo(aftList.stream()
+                    .anyMatch(e -> e.getTrabajador().getId() != trab.getId()));
+            logger.warn("Activos asociados:\t" + aftList.size());
+            logger.warn(trab.isHasActivo() + "");
+            return trab;
+        }).collect(Collectors.toList());
     }
 
     public Trabajador create(Trabajador trb) {

@@ -2,7 +2,6 @@ package com.snsm.examen1.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import com.snsm.examen1.domain.ActivoFisico;
 import com.snsm.examen1.domain.ActivoFisicoDeTrabajador;
@@ -31,7 +30,7 @@ public class ActivoFisicoDeTrabajadorService {
     private ActivoFisicoDeTrabajadorRepository activoFisicoDeTrabajadorRepository;
 
     @Autowired
-    private TrabajadorRepository trabajadorRepository;
+    private TrabajadorService trabajadorService;
 
     @Autowired
     private ActivoFisicoRepository activoFisicoRepository;
@@ -46,36 +45,50 @@ public class ActivoFisicoDeTrabajadorService {
         return this.activoFisicoDeTrabajadorRepository.findAll();
     }
 
+    /**
+     * Si existen trabajador y activo, y hay activos disponibles, se crea la
+     * asignacion | Si el trabajador tiene un activo actualmente o no hay
+     * activos, se retorna null
+     */
     public ActivoFisicoDeTrabajador create(long idTrabajador,
                                            long idActivoFisico,
-                                           LocalDate fechaAsignacion) {
+                                           LocalDate fechaAsignacion,
+                                           String estado) {
         try {
-            Trabajador trb =
-                    trabajadorRepository.findById(idTrabajador).orElse(null);
+            // cargar listas
+            Trabajador trb = trabajadorService.getTrabajadorById(idTrabajador);
             List<ActivoFisico> acfLst = activoFisicoRepository.findAll();
-            ActivoFisico acf = acfLst.stream()
-                    .filter(a -> a.getId() == idActivoFisico
-                            && a.getEstado() != "INACTIVO")
-                    .collect(Collectors.toList()).get(0);
-            logger.debug("ActivoFisico esta activo");
+
+            // obtener activo fisico
+            ActivoFisico acf = activoFisicoRepository.findById(idActivoFisico)
+                    .orElse(null);
 
             // Si existen los elementos
             if (trb != null && acf != null) {
-                logger.debug("Trabajador y ActivoFisico existen");
-                // Si el estado del activo es ACTIVO
+                if (trb.isHasActivo()) {
+                    logger.warn("El trabajador ya tiene un activo registrado");
+                    return null;
+                }
+                if (acf.getCantidadAsignados() == acf.getCantidad()) {
+                    acf.setEstado("INACTIVO");
+                    this.activoFisicoRepository.save(acf);
+                    logger.warn("No hay activos disponibles");
+                    return null;
+                }
+                logger.warn("Se ha realizado el registro");
+                acf.setCantidadAsignados(acf.getCantidadAsignados() + 1);
+                trb.setHasActivo(true);
                 ActivoFisicoDeTrabajador act = new ActivoFisicoDeTrabajador();
-                act.setEstado("ACTIVO");
-                acf.setEstado("INACTIVO");
                 act.setTrabajador(trb);
                 act.setActivoFisico(acf);
                 act.setFechaAsignacion(fechaAsignacion);
+                act.setEstado(estado);
                 return this.activoFisicoDeTrabajadorRepository.save(act);
             }
             return null;
         } catch (Exception e) {
             logger.error("Create Error: " + e.toString());
             return null;
-
         }
     }
 
@@ -102,14 +115,28 @@ public class ActivoFisicoDeTrabajadorService {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Si el activo de trabajador ya fue cerrado antes = null Al cerrar el
+     * activo de trabajador, se cambia el estado a inactivo y el activo fisico
+     * reduce en 1 la cantidad de asignados, debido a esto el activo fisico
+     * siempre estara ACTIVO cuando se cierre una de sus relaciones.
+     */
     public ActivoFisicoDeTrabajador close(long id) {
         try {
             ActivoFisicoDeTrabajador aft =
-                    this.activoFisicoDeTrabajadorRepository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException(
-                                    "ActivoFisicoDeTrabajador", "id", id));
-            logger.warn(aft.toString());
+                    this.getActivoFisicoDeTrabajadorById(id);
+
+            // Si el activo fisico esta inactivo, no hacer nada
+            if (aft.getEstado().equals("INACTIVO")) {
+                logger.warn(
+                        "El activo de trabajador ya fue cerrado previamente");
+                return null;
+            }
+
             aft.setEstado("INACTIVO");
+            aft.getTrabajador().setHasActivo(false);
+            aft.getActivoFisico().setCantidadAsignados(
+                    aft.getActivoFisico().getCantidadAsignados() - 1);
             aft.getActivoFisico().setEstado("ACTIVO");
             activoFisicoRepository.save(aft.getActivoFisico());
             return this.activoFisicoDeTrabajadorRepository.save(aft);
